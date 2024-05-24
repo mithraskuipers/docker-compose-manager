@@ -21,7 +21,7 @@ Managing Docker containers can be a tedious and error-prone process, especially 
 4. Run the script with the following command:
 
 `bash
-python3 docker_container_management.py
+python3 docker-compose-manager.py
 `
 
 5. Follow the prompts in the terminal to manage your Docker containers.
