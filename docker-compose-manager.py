@@ -26,7 +26,7 @@ containers_running = any(service in running_containers for service in services)
 
 if containers_running:
     print("Some containers are already running.")
-    stop_containers = input("Do you want to stop and remove all existing containers? (y/n/0 to exit): ").lower()
+    stop_containers = input("Would you like to stop and remove all existing containers? (y/n/0 to exit): ").lower()
 
     if stop_containers == "y":
         subprocess.run(["docker", "compose", "down", "--volumes", "--remove-orphans"])
@@ -36,7 +36,7 @@ if containers_running:
             print(f"{i}. {container}")
         print("0. Exit and run 'docker compose down'")
 
-        selection = input("Do you want to connect to a running container or exit? (enter number): ")
+        selection = input("Would you like to connect to a running container or exit? (enter number): ")
         if selection == "0":
             subprocess.run(["docker", "compose", "down", "--volumes", "--remove-orphans"])
             exit(0)
@@ -53,10 +53,18 @@ if containers_running:
     else:
         print("Invalid selection. Exiting without starting or connecting to containers.")
         exit(0)
+else:
+    print("No containers defined in the docker-compose.yml are currently running.")
 
-# Try to run docker compose up
+# Ask if the user wants to force rebuild the images
+force_rebuild = input("Would you like to force rebuild the images? (y/n): ").lower()
+
+# Try to run docker compose up with or without --build
 try:
-    subprocess.run(["docker", "compose", "up", "-d"], check=True)
+    if force_rebuild == "y":
+        subprocess.run(["docker", "compose", "up", "--build", "-d"], check=True)
+    else:
+        subprocess.run(["docker", "compose", "up", "-d"], check=True)
 except subprocess.CalledProcessError as e:
     print("An error occurred while running 'docker compose up':")
     print(e.output.decode())
@@ -70,7 +78,7 @@ print("0. Exit and run 'docker compose down'")
 
 # Prompt the user to select a service
 while True:
-    selection = input("Select a service (enter the number) or 0 to exit: ")
+    selection = input("Please select a service (enter the number) or 0 to exit: ")
     if selection == "0":
         subprocess.run(["docker", "compose", "down", "--volumes", "--remove-orphans"])
         exit(0)
